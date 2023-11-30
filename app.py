@@ -1,3 +1,4 @@
+import uuid
 import json
 import os
 from flask import Flask,request,jsonify
@@ -7,30 +8,48 @@ import random
 from flask_cors import CORS
 from gloabl_ver import questions
 from dotenv import load_dotenv
-
 load_dotenv()
 
 api_key = os.getenv("BARD_API_KEY")
 if not api_key:
     raise ValueError("OpenAI API key not found. Make sure it's set in the .env file.")
 
-number_of_questions = 10
-ask_question = random.sample(questions,number_of_questions)
+folder_path = "Flask_sessions"
+
+
 
 palm.configure(api_key=api_key)
+
 file_path = 'stored_data.json'
+
 QNA = {}
 
 app = Flask (__name__)
 
 CORS(app, origins='*')
 
+@app.route('/generate_session', methods=['GET'])
+def generate_session():
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+    session_id = str(uuid.uuid4())
+    filename = f"{folder_path}/{session_id}.json"
+    # Data to be written to the JSON file (null values)
+    data = []
+    # Write the data to the JSON file
+    with open(filename, 'w') as json_file:
+        json.dump(data, json_file, indent=4)
+
+    return jsonify(session_id)
+
 @app.route('/generate_questions', methods=["GET"])
-def generate_questions():
+def generate_questions(session_id):
+    number_of_questions = 10
+    ask_question = random.sample(questions,number_of_questions)
     return jsonify(ask_question)
 
-@app.route("/store_qa", methods=["POST"])
-def store_questions():
+@app.route("/store_qa/<session_id>", methods=["POST"])
+def store_questions(session_id):
     
     try:
         if request.form:
@@ -39,19 +58,20 @@ def store_questions():
             # If not, assume JSON data
             data = request.get_json()
         # Check if the file exists
-        if os.path.exists(file_path):
+        if os.path.exists(f"{folder_path}/{session_id}.json"):
             # If the file exists, load existing data
-            with open(file_path, 'r') as file:
+            with open(f"{folder_path}/{session_id}.json", 'r') as file:
                 existing_data = json.load(file)
             
             # Append the new data to the existing data
             existing_data.append(data)
         else:
             # If the file doesn't exist, create a new list with the incoming data
-            existing_data = [data]
+            response = {'status': 'error', 'message': 'Invalid session ID'}
+            return jsonify(response)
 
         # Write the combined data back to the file
-        with open(file_path, 'w') as file:
+        with open(f"{folder_path}/{session_id}.json", 'w') as file:
             json.dump(existing_data, file)
 
         response = existing_data
