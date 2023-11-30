@@ -19,7 +19,7 @@
 ```bash
   touch .env
   # Write below variables
-  # OPENAI_API_KEY="<KEY>"
+  # BARD_API_KEY="<KEY>"
   # PORT="<port number>`"
 ```
 
