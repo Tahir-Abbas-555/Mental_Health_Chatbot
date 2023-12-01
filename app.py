@@ -88,7 +88,6 @@ def predict():
     else:
         # If not, assume JSON data
         data = request.get_json()
-    print(data)
     prompt = f""" 
         you are an expert mental health analyzer who can predict the setiment("positive","negative","neutral") of person using question and answer.
         predict the mental health using this data:{data}.
@@ -100,13 +99,10 @@ def predict():
         temperature=0.4,
     )
     if (completion.result).lower() == "positive":
-        print({"link":"https://www.youtube.com/watch?v=ZbZSe6N_BXs","sentiment":completion.result})
         return {"link":"https://www.youtube.com/watch?v=ZbZSe6N_BXs","sentiment":completion.result}
     elif (completion.result).lower() == "negative":
-        print({"link":"https://www.youtube.com/watch?v=8AHCfZTRGiI","sentiment":completion.result})
         return {"link":"https://www.youtube.com/watch?v=8AHCfZTRGiI","sentiment":completion.result}
     elif (completion.result).lower() == "neutral":
-        print({"link":"https://www.youtube.com/watch?v=8AHCfZTRGiI","sentiment":completion.result})
         return {"link":"https://www.youtube.com/watch?v=qYnA9wWFHLI","sentiment":completion.result}
     return jsonify(completion.result)
     
