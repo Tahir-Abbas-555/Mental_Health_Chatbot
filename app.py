@@ -42,14 +42,14 @@ def generate_session():
 
     return jsonify(session_id)
 
-@app.route('/generate_questions', methods=["GET"])
+@app.route('/generate_questions/<session_id>', methods=["GET"])
 def generate_questions(session_id):
     number_of_questions = 10
     ask_question = random.sample(questions,number_of_questions)
     return jsonify(ask_question)
 
 @app.route("/store_qa/<session_id>", methods=["POST"])
-def store_questions(session_id):
+def store_qa(session_id):
     
     try:
         if request.form:
@@ -81,13 +81,14 @@ def store_questions(session_id):
     return jsonify(response)
     
 @app.route("/predict",methods=["POST"])
-def hello():
+def predict():
 
     if request.form:
         data = request.form.get
     else:
         # If not, assume JSON data
         data = request.get_json()
+    print(data)
     prompt = f""" 
         you are an expert mental health analyzer who can predict the setiment("positive","negative","neutral") of person using question and answer.
         predict the mental health using this data:{data}.
@@ -99,10 +100,13 @@ def hello():
         temperature=0.4,
     )
     if (completion.result).lower() == "positive":
+        print({"link":"https://www.youtube.com/watch?v=ZbZSe6N_BXs","sentiment":completion.result})
         return {"link":"https://www.youtube.com/watch?v=ZbZSe6N_BXs","sentiment":completion.result}
     elif (completion.result).lower() == "negative":
+        print({"link":"https://www.youtube.com/watch?v=8AHCfZTRGiI","sentiment":completion.result})
         return {"link":"https://www.youtube.com/watch?v=8AHCfZTRGiI","sentiment":completion.result}
     elif (completion.result).lower() == "neutral":
+        print({"link":"https://www.youtube.com/watch?v=8AHCfZTRGiI","sentiment":completion.result})
         return {"link":"https://www.youtube.com/watch?v=qYnA9wWFHLI","sentiment":completion.result}
     return jsonify(completion.result)
     
