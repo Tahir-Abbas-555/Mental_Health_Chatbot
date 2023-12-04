@@ -20,7 +20,6 @@
   touch .env
   # Write below variables
   # BARD_API_KEY="<KEY>"
-  # PORT="<port number>`"
 ```
 
 
