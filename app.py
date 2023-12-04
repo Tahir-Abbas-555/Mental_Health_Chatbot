@@ -119,8 +119,7 @@ def predict():
 
     # # Clean the JSON string
     json_string = json_string.replace('\\"', '"').replace("\n", "").replace("\\", "")
-
-    return jsonify(json_string)
+    return json_string
     
 if __name__ == "__main__":
     app.run(debug=True,host="0.0.0.0",port=4000)
