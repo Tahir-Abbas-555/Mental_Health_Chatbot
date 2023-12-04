@@ -8,6 +8,7 @@ import random
 from flask_cors import CORS
 from gloabl_ver import questions
 from dotenv import load_dotenv
+import json
 load_dotenv()
 
 api_key = os.getenv("BARD_API_KEY")
@@ -16,6 +17,16 @@ if not api_key:
 
 folder_path = "Flask_sessions"
 
+defaults = {
+  'model': 'models/text-bison-001',
+  'temperature': 0.1,
+  'candidate_count': 1,
+  'top_k': 40,
+  'top_p': 0.95,
+  'max_output_tokens': 1024,
+  'stop_sequences': [],
+  'safety_settings': [{"category":"HARM_CATEGORY_DEROGATORY","threshold":"BLOCK_NONE"},{"category":"HARM_CATEGORY_TOXICITY","threshold":"BLOCK_NONE"},{"category":"HARM_CATEGORY_VIOLENCE","threshold":"BLOCK_NONE"},{"category":"HARM_CATEGORY_SEXUAL","threshold":"BLOCK_NONE"},{"category":"HARM_CATEGORY_MEDICAL","threshold":"BLOCK_NONE"},{"category":"HARM_CATEGORY_DANGEROUS","threshold":"BLOCK_NONE"}],
+}
 
 
 palm.configure(api_key=api_key)
@@ -88,23 +99,28 @@ def predict():
     else:
         # If not, assume JSON data
         data = request.get_json()
-    prompt = f""" 
-        you are an expert mental health analyzer who can predict the setiment("positive","negative","neutral") of person using question and answer.
-        predict the mental health using this data:{data}.
-        just tell us the setiment of person using question and answer.
-        """
+    json_format = """"sentiment": "positive" or "negative" or "neutral",
+    "Reason": "Predict the detailed reason for the sentiment.",
+    "Things to do": "Predict detailed actions to be taken based on the sentiment."
+    """
+    prompt = "you are an expert mental health analyzer, you can analys the mental health Using the given data:",data,"the response should include {'sentiment':'neutral' or 'positive' or 'negative', 'reason': 'Predict the detailed reason for the sentiment.', 'things to do' : 'Predict detailed actions to be taken based on the sentiment.'.}"
+    prompt = str(prompt)
     completion = palm.generate_text(
-        model="models/text-bison-001",
+        **defaults,
         prompt=prompt,
-        temperature=0.4,
     )
-    if (completion.result).lower() == "positive":
-        return {"link":"https://www.youtube.com/watch?v=ZbZSe6N_BXs","sentiment":completion.result}
-    elif (completion.result).lower() == "negative":
-        return {"link":"https://www.youtube.com/watch?v=8AHCfZTRGiI","sentiment":completion.result}
-    elif (completion.result).lower() == "neutral":
-        return {"link":"https://www.youtube.com/watch?v=qYnA9wWFHLI","sentiment":completion.result}
-    return jsonify(completion.result)
+    response = completion.result
+    # new = str(completion.result).replace("\n", "")
+    # print(new)
+    # Extract the JSON string from the input
+    json_start = response.find('{')
+    json_end = response.rfind('}') + 1
+    json_string = response[json_start:json_end]
+
+    # # Clean the JSON string
+    json_string = json_string.replace('\\"', '"').replace("\n", "").replace("\\", "")
+
+    return jsonify(json_string)
     
 if __name__ == "__main__":
     app.run(debug=True,host="0.0.0.0",port=4000)
