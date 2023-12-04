@@ -32,14 +32,15 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:4000/generate_questions",
+					"raw": "http://localhost:4000/generate_questions/<session_id>",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "4000",
 					"path": [
-						"generate_questions"
+						"generate_questions",
+						"<session_id>"
 					]
 				}
 			},
@@ -60,7 +61,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:4000/store_qa/6dd15d3c-ce2e-45fb-8ca0-cca355bc958d",
+					"raw": "http://localhost:4000/store_qa/<session_id>",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -68,7 +69,7 @@
 					"port": "4000",
 					"path": [
 						"store_qa",
-						"6dd15d3c-ce2e-45fb-8ca0-cca355bc958d"
+						"<session_id>"
 					]
 				}
 			},
