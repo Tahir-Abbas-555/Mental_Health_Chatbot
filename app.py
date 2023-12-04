@@ -99,7 +99,7 @@ def predict():
     else:
         # If not, assume JSON data
         data = request.get_json()
-        
+
     prompt = "you are an expert mental health analyzer, you can analys the mental health Using the given data:",data,"the response should include {'sentiment':'neutral' or 'positive' or 'negative', 'reason': 'Predict the detailed reason for the sentiment.', 'things to do' : 'Predict detailed actions to be taken based on the sentiment.'.}"
     prompt = str(prompt)
     completion = palm.generate_text(
@@ -107,8 +107,7 @@ def predict():
         prompt=prompt,
     )
     response = completion.result
-    # new = str(completion.result).replace("\n", "")
-    # print(new)
+    
     # Extract the JSON string from the input
     json_start = response.find('{')
     json_end = response.rfind('}') + 1
