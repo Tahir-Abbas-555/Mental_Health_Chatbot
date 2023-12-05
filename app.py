@@ -93,30 +93,32 @@ def store_qa(session_id):
     
 @app.route("/predict",methods=["POST"])
 def predict():
+    try:
+        if request.form:
+            data = request.form.get
+        else:
+            # If not, assume JSON data
+            data = request.get_json()
 
-    if request.form:
-        data = request.form.get
-    else:
-        # If not, assume JSON data
-        data = request.get_json()
+        prompt = "you are an expert mental health analyzer, you can analys the mental health Using the given data:",data,"the response should include {'sentiment':'neutral' or 'positive' or 'negative', 'reason': 'Predict the detailed reason for the sentiment.', 'things to do' : 'Predict detailed actions to be taken based on the sentiment.'.}"
+        prompt = str(prompt)
+        completion = palm.generate_text(
+            **defaults,
+            prompt=prompt,
+        )
+        response = completion.result
 
-    prompt = "you are an expert mental health analyzer, you can analys the mental health Using the given data:",data,"the response should include {'sentiment':'neutral' or 'positive' or 'negative', 'reason': 'Predict the detailed reason for the sentiment.', 'things to do' : 'Predict detailed actions to be taken based on the sentiment.'.}"
-    prompt = str(prompt)
-    completion = palm.generate_text(
-        **defaults,
-        prompt=prompt,
-    )
-    response = completion.result
-    
-    # Extract the JSON string from the input
-    json_start = response.find('{')
-    json_end = response.rfind('}') + 1
-    json_string = response[json_start:json_end]
+        # Extract the JSON string from the input
+        json_start = response.find('{')
+        json_end = response.rfind('}') + 1
+        json_string = response[json_start:json_end]
 
-    # # Clean the JSON string
-    json_string = json_string.replace('\\"', '"').replace("\n", "").replace("\\", "")
-    
-    return jsonify(json_string)
+        # # Clean the JSON string
+        json_string = json_string.replace('\\"', '"').replace("\n", "").replace("\\", "")
+        final_response = eval(json_string)
+        return jsonify(final_response)
+    except Exception as e:
+        return jsonify({"error": str(e)})
     
 if __name__ == "__main__":
     app.run(debug=True,host="0.0.0.0",port=4000)
