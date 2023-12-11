@@ -1,7 +1,7 @@
 import uuid
 import json
 import os
-from flask import Flask,request,jsonify
+from flask import Flask,request,jsonify, render_template
 import pprint
 import google.generativeai as palm
 import random
@@ -10,6 +10,10 @@ from gloabl_ver import questions
 from dotenv import load_dotenv
 import json
 load_dotenv()
+
+app = Flask (__name__)
+
+CORS(app, origins='*')
 
 api_key = os.getenv("BARD_API_KEY")
 if not api_key:
@@ -35,9 +39,9 @@ file_path = 'stored_data.json'
 
 QNA = {}
 
-app = Flask (__name__)
-
-CORS(app, origins='*')
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 @app.route('/generate_session', methods=['GET'])
 def generate_session():
