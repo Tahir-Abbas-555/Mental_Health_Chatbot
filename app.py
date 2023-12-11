@@ -13,7 +13,7 @@ load_dotenv()
 
 app = Flask (__name__)
 
-CORS(app, origins='http://localhost:4000') 
+CORS(app, origins='*')
 
 api_key = os.getenv("BARD_API_KEY")
 if not api_key:
@@ -126,4 +126,4 @@ def predict():
         return jsonify({"error": str(e)})
     
 if __name__ == "__main__":
-    app.run(host="0.0.0.0",port=4000)
+    app.run(debug=True,host="0.0.0.0",port=4000)

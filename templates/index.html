@@ -12,82 +12,84 @@
     <!-- <link rel="stylesheet" href="styles.css"> -->
     <style>
         body {
-    font-family: 'Arial', sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f9f9f9;
-}
+            background-image: url('https://res.cloudinary.com/ddxbqolus/image/upload/v1702213589/ecgc4ph7y2uipeq2skje.jpg'); /* replace 'your-background-image.jpg' with your image path */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: #fff; /* set text color to white for better visibility on the background image */
+        }
 
-.container {
-    max-width: 800px;
-    margin: auto;
-    padding: 20px;
-    background-color: #fff;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-    margin-top: 50px;
-    border-radius: 8px;
-}
 
-h1 {
-    color: #333;
-}
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 40px;
+            background-color: #fff;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            margin-top: 50px;
+            border-radius: 10px;
+            transition: box-shadow 0.3s ease; /* Add smooth transition to box-shadow */
+        }
 
-#questionContainer {
-    margin-top: 20px;
-}
+        h1 {
+            color: #4caf50; /* Set heading color to a green shade */
+        }
 
-#questionOutput {
-    font-size: 18px;
-    margin-bottom: 10px;
-}
+        #questionContainer {
+            margin-top: 30px;
+        }
 
-#questionCount {
-    color: #555;
-}
+        #questionOutput {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: #555; /* Set a slightly muted color for better readability */
+        }
 
-#answerInput {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    resize: none; /* Prevent resizing */
-    overflow: hidden; /* Hide scrollbar */
-    transition: height 0.3s ease; /* Smooth transition */
-}
+        #questionCount {
+            color: #777; /* Use a lighter color for question count */
+        }
 
-#answerInput:focus {
-    outline: none; /* Remove focus outline */
-    border-color: #4caf50; /* Highlight border on focus */
-}
-#nextQuestionBtn, #stopChatBtn {
-    padding: 12px 20px;
-    background-color: #4caf50;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease-in-out;
-}
+        #answerInput {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            transition: border-color 0.3s ease; /* Add smooth transition to border-color */
+        }
 
-#nextQuestionBtn:hover, #stopChatBtn:hover {
-    background-color: #45a049;
-}
+        #answerInput:focus {
+            outline: none;
+            border-color: #4caf50;
+        }
 
-#predictionOutput {
-    margin-top: 20px;
-    font-size: 16px;
-    display: none;
-}
+        #nextQuestionBtn, #stopChatBtn {
+            padding: 15px 30px;
+            font-size: 18px;
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out;
+        }
 
-#predictionOutput a {
-    color: #007bff;
-    text-decoration: none;
-}
+        #nextQuestionBtn:hover, #stopChatBtn:hover {
+            background-color: #4caf50;
+        }
 
-#predictionOutput a:hover {
-    text-decoration: underline;
-}
+
+        #predictionOutput {
+            margin-top: 30px;
+            font-size: 18px;
+            display: none;
+            color: #007bff;
+        }
+
+        #predictionOutput a:hover {
+            text-decoration: underline;
+        }
+
 
     </style>
 </head>
@@ -100,7 +102,7 @@ h1 {
             <textarea id="answerInput" class="form-control mb-3" placeholder="Type your answer"></textarea>
             <button id="nextQuestionBtn" class="btn btn-success mr-2 animate__animated animate__fadeInLeft animate__slow animate__delay-1s">Next Question</button>
             <button id="stopChatBtn" class="btn btn-danger animate__animated animate__fadeInRight animate__slow animate__delay-1s">Stop Chat</button>
-            <button id="voiceInputBtn" class="btn btn-primary animate__animated animate__fadeInRight animate__slow animate__delay-1s">Start Voice Input</button>
+{#            <button id="voiceInputBtn" class="btn btn-primary animate__animated animate__fadeInRight animate__slow animate__delay-1s">Start Voice Input</button>#}
         </div>
         <div id="predictionOutput" class="alert alert-info mt-3" style="display: none;"></div>
     </div>
@@ -114,7 +116,7 @@ h1 {
 
 document.addEventListener('DOMContentLoaded', async function() {
     // Call your backend API to generate a session
-    const sessionResponse = await fetch('http://localhost:4000/generate_session');
+    const sessionResponse = await fetch('/generate_session');
     const sessionData = await sessionResponse.json();
 
     // Show the question container
@@ -128,7 +130,7 @@ let recognition; // Declare the recognition object globally
 
 async function initiateQuestionFlow(sessionID) {
     // Call your backend API to generate questions
-    const questionResponse = await fetch(`http://localhost:4000/generate_questions/${sessionID}`);
+    const questionResponse = await fetch(`/generate_questions/${sessionID}`);
     const questionData = await questionResponse.json();
 
     // Display the first question and question count in the output div
@@ -146,7 +148,7 @@ async function initiateQuestionFlow(sessionID) {
         };
 
         // Call your backend API to store the answer
-        await fetch(`http://localhost:4000/store_qa/${sessionID}`, {
+        await fetch(`/store_qa/${sessionID}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -233,7 +235,7 @@ function updateQuestionCount(remainingQuestions) {
 async function sendStoredDataToPredict(sessionID) {
     try {
         // Call your backend API to get the stored data
-        const storedDataResponse = await fetch(`http://localhost:4000/store_qa/${sessionID}`, {
+        const storedDataResponse = await fetch(`/store_qa/${sessionID}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -251,7 +253,7 @@ async function sendStoredDataToPredict(sessionID) {
         const storedData = JSON.parse(rawStoredData);
         const nonEmptyStoredData = storedData.filter(item => Object.keys(item).length > 0);
         // Call your backend API to predict mental health sentiment using stored data
-        const predictResponse = await fetch('http://localhost:4000/predict', {
+        const predictResponse = await fetch('/predict', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
