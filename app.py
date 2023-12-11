@@ -117,6 +117,7 @@ def predict():
         json_string = json_string.replace('\\"', '"').replace("\n", "").replace("\\", "")
         final_response = eval(json_string)
         return jsonify(final_response)
+    
     except Exception as e:
         return jsonify({"error": str(e)})
     
